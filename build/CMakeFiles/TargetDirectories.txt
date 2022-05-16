@@ -1,0 +1,5 @@
+/home/jessy/Documents/github/Aim-Radium/build/CMakeFiles/Install_Aim-Radium.dir
+/home/jessy/Documents/github/Aim-Radium/build/CMakeFiles/Aim-Radium.dir
+/home/jessy/Documents/github/Aim-Radium/build/CMakeFiles/edit_cache.dir
+/home/jessy/Documents/github/Aim-Radium/build/CMakeFiles/rebuild_cache.dir
+/home/jessy/Documents/github/Aim-Radium/build/CMakeFiles/Aim-Radium_autogen.dir
