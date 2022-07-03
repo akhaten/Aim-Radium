@@ -30,19 +30,32 @@ find_package(Qt5 COMPONENTS Core Widgets OpenGL REQUIRED)
 set(QT5_LIB Qt5::Core Qt5::Widgets Qt5::OpenGL)
 #qt5_wrap_ui(app_uis_moc ./src/Gui/MainWindow.ui)
 
-set(GUI_SOURCE
-	./src/Gui/MainWindow.hpp
-	./src/Gui/MainWindow.cpp
-	#./src/Gui/ui_MainWindow.hpp
-)
+#set(GUI_SOURCE
+#	./src/Gui/MainWindow.hpp
+#	./src/Gui/MainWindow.cpp
+#	#./src/Gui/ui_MainWindow.hpp
+#)
 
+set(FPS_SOURCE
+	./src/FPS/CameraManipulatorFPS.hpp
+	./src/FPS/CameraManipulatorFPS.cpp
+)
 # Executable
 add_executable(${PROJECT_NAME}
 	./src/main.cpp
-	${GUI_SOURCE}
+	#${GUI_SOURCE}
+	#${FPS_SOURCE}
+)
+
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
+target_include_directories(
+    ${PROJECT_NAME} PRIVATE ${RADIUM_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR} # Moc
+                            ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 target_link_libraries(Aim-Radium ${RADIUM_LIB} ${QT5_LIB})
+
+configure_radium_app(NAME ${PROJECT_NAME})
 
 #project(Aim-Radium VERSION 0.1)
 
