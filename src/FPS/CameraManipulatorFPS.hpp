@@ -9,8 +9,11 @@
 #include <Engine/Scene/CameraComponent.hpp>
 #include <Gui/Viewer/CameraManipulator.hpp>
 
+#include <QCursor>
+
 namespace Ra {
 namespace Gui {
+
 class RA_GUI_API CameraManipulatorFPS :
 	public Ra::Gui::CameraManipulator,
 	public KeyMappingManageable<CameraManipulatorFPS>
@@ -88,8 +91,15 @@ class RA_GUI_API CameraManipulatorFPS :
 		inline static KeyMappingManager::KeyMappingAction ROTATE;
 	
 	private:
+		QCursor cursor;
+		Core::Transform R_acc;
 		Scalar last_x;
 		Scalar last_y;
+		Scalar crosshair_x;
+		Scalar crosshair_y;
+		Scalar theta;
+		Scalar phi;
+		Ra::Core::Vector3 vector_up;
 		Scalar yaw;
 		bool first_mouse;
 		KeyMappingManager::Context current_context;

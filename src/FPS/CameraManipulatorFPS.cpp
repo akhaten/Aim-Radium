@@ -2,6 +2,10 @@
 
 #include <Gui/Utils/KeyMappingManager.hpp>
 #include <Core/Math/LinearAlgebra.hpp>
+#include <Core/Math/Math.hpp>
+#include <glm/glm.hpp>
+
+
 
 namespace Ra {
 namespace Gui {
@@ -15,19 +19,27 @@ using KeyMappingCameraManipulatorFPS = Ra::Gui::KeyMappingManageable<CameraManip
 CameraManipulatorFPS::CameraManipulatorFPS():
 	CameraManipulator()
 {
-	first_mouse = true;
-	last_x = m_camera->getWidth() / 2;
-	last_y = m_camera->getHeight() / 2;
-	yaw = -90;
+	// m_camera->setPosition(Ra::Core::Vector3(0_ra, 2_ra, 0_ra));
+	vector_up = Ra::Core::Vector3( 0_ra, 1_ra, 0_ra );
+	
+	this->cursor.setPos(m_camera->getWidth() / 2, m_camera->getWidth() / 2);
+	theta = 0.f;
+	// phi = 0.f;
+	Core::Transform R_acc( Core::Transform::Identity() );
 }
 
 CameraManipulatorFPS::CameraManipulatorFPS(const Ra::Gui::CameraManipulator& other):	
 	Ra::Gui::CameraManipulator(other)
 {
-	first_mouse = true;
+	vector_up = Ra::Core::Vector3( 0_ra, 1_ra, 0_ra );;
 	last_x = m_camera->getWidth() / 2;
  	last_y = m_camera->getHeight() / 2;
-	yaw = -90;
+	// crosshair_x = m_camera->getWidth() / 2;
+	// crosshair_y = m_camera->getHeight() / 2;
+	this->cursor.setPos(m_camera->getWidth() / 2, m_camera->getWidth() / 2);
+	theta = 0.f;
+	// phi = 0.f;
+	Core::Transform R_acc( Core::Transform::Identity() );
 }
 
 CameraManipulatorFPS::~CameraManipulatorFPS() {}
@@ -39,74 +51,160 @@ void CameraManipulatorFPS::configureKeyMapping_impl()
 {
 	
 	// Create key mapping manager
-	Gui::KeyMappingManager* key_mapping_manager = Gui::KeyMappingManager::getInstance();
-
-	// Add actions
+	//Gui::KeyMappingManager* key_mapping_manager = Gui::KeyMappingManager::getInstance();
+	KeyMappingCameraManipulatorFPS::setContext(Gui::KeyMappingManager::getInstance()->getContext( "FPSManipulatorContext" ));
 	
-	key_mapping_manager->addAction(
-		/* context = */ 			"FPSCamera",
-		/* keyString = */ 			"Key_Z",
-		/* modifiersString = */ 	"NoModifiers",
-		/* buttonString = */ 		"-1",
-		/* wheelString = */ 		"-1",
-		/* actionString = */ 		"TO_FORDWARD",
-		/* saveToConfigFile = */ 	false
-	);
+	if ( KeyMappingCameraManipulatorFPS::getContext().isInvalid() ) {
+        LOG( Ra::Core::Utils::logWARNING ) << "KeyMappingCameraManipulatorFPS not defined (maybe the "
+                                               "configuration file do not contains it). Adding "
+                                               "default configuration for KeyMappingCameraManipulatorFPS.";
 
-	key_mapping_manager->addAction(    
-        /* context = */             "FPSCamera",       
-        /* keyString = */           "Key_S",           
-        /* modifiersString = */     "NoModifiers",           
-        /* buttonString = */        "-1",                    
-        /* wheelString = */         "-1",                    
-        /* actionString = */        "TO_BACKWARD",      
-        /* saveToConfigFile = */    false               
-    );
+		Gui::KeyMappingManager* key_mapping_manager = Gui::KeyMappingManager::getInstance();
 
-	key_mapping_manager->addAction(    
-        /* context = */             "FPSCamera",       
-        /* keyString = */           "Key_D",           
-        /* modifiersString = */     "NoModifiers",           
-        /* buttonString = */        "-1",                    
-        /* wheelString = */         "-1",                    
-        /* actionString = */        "TO_RIGHT",      
-        /* saveToConfigFile = */    false               
-    );
+		// Add actions
 
-	key_mapping_manager->addAction(    
-        /* context = */             "FPSCamera",       
-        /* keyString = */           "Key_Q",           
-        /* modifiersString = */     "NoModifiers",           
-        /* buttonString = */        "-1",                    
-        /* wheelString = */         "-1",                    
-        /* actionString = */        "TO_LEFT",      
-        /* saveToConfigFile = */    false               
-    );
+		key_mapping_manager->addAction(
+			/* context = */ 			"FPSManipulatorContext",
+			/* keyString = */ 			"Key_Z",
+			/* modifiersString = */ 	"NoModifier",
+			/* buttonString = */ 		"",
+			/* wheelString = */ 		"",
+			/* actionString = */ 		"TO_FORDWARD",
+			/* saveToConfigFile = */ 	false
+		);
 
-	key_mapping_manager->addAction(    
-        /* context = */             "FPSCamera",       
-        /* keyString = */           "Key_SPACE",           
-        /* modifiersString = */     "NoModifiers",           
-        /* buttonString = */        "-1",                    
-        /* wheelString = */         "-1",                    
-        /* actionString = */        "JUMP",      
-        /* saveToConfigFile = */    false               
-    );
+		key_mapping_manager->addAction(    
+			/* context = */             "FPSManipulatorContext",       
+			/* keyString = */           "Key_S",           
+			/* modifiersString = */     "NoModifier",           
+			/* buttonString = */        "",                    
+			/* wheelString = */         "",                    
+			/* actionString = */        "TO_BACKWARD",      
+			/* saveToConfigFile = */    false               
+		);
 
+		key_mapping_manager->addAction(    
+			/* context = */             "FPSManipulatorContext",       
+			/* keyString = */           "Key_D",           
+			/* modifiersString = */     "NoModifier",           
+			/* buttonString = */        "",                    
+			/* wheelString = */         "",                    
+			/* actionString = */        "TO_RIGHT",      
+			/* saveToConfigFile = */    false               
+		);
+		
+		key_mapping_manager->addAction(    
+			/* context = */             "FPSManipulatorContext",       
+			/* keyString = */           "Key_Q",           
+			/* modifiersString = */     "NoModifier",           
+			/* buttonString = */        "",                    
+			/* wheelString = */         "",                    
+			/* actionString = */        "TO_LEFT",      
+			/* saveToConfigFile = */    false               
+		);
 
-	KeyMapping::setContext(KeyMappingManager::getInstance()->getContext("FPSCamera"));
+		key_mapping_manager->addAction(    
+			/* context = */             "FPSManipulatorContext",       
+			/* keyString = */           "Key_SPACE",           
+			/* modifiersString = */     "NoModifier",           
+			/* buttonString = */        "",                    
+			/* wheelString = */         "",                    
+			/* actionString = */        "JUMP",      
+			/* saveToConfigFile = */    false               
+		);
+
+		KeyMappingCameraManipulatorFPS::setContext(key_mapping_manager->getContext("FPSManipulatorContext"));
+						
   
-	if(KeyMapping::getContext().isInvalid())
-	{
-  		LOG( Ra::Core::Utils::logINFO ) << "CameraContext not defined (maybe the configuration file do not contains it)";
-  		LOG( Ra::Core::Utils::logERROR ) << "CameraContext all keymapping invalid !";
-  		return;
-	}
+        //  Gui::KeyMappingManager::getInstance()->addAction(
+        //      "FPSManipulatorContext", "", "", "LeftButton", "", "FLIGHTMODECAMERA_ROTATE" );
+        //  Gui::KeyMappingManager::getInstance()->addAction( "FlightManipulatorContext",
+        //                                                    "",
+        //                                                    "ShiftModifier",
+        //                                                    "LeftButton",
+        //                                                    "",
+        //                                                    "FLIGHTMODECAMERA_PAN" );
+        //  Gui::KeyMappingManager::getInstance()->addAction( "FlightManipulatorContext",
+        //                                                    "",
+        //                                                    "ControlModifier",
+        //                                                    "LeftButton",
+        //                                                    "",
+        //                                                    "FLIGHTMODECAMERA_ZOOM" );
+        //  Gui::KeyMappingManager::getInstance()->addAction(
+        //      "FlightManipulatorContext", "Key_A", "", "", "", "FLIGHTMODECAMERA_ROTATE_AROUND" );
+
+        //  FlightCameraKeyMapping::setContext(
+        //      Gui::KeyMappingManager::getInstance()->getContext( "FlightManipulatorContext" ) );
+     }
+
+
+	// // Add actions
+
+	// key_mapping_manager->addAction(
+	// 	/* context = */ 			"FPSCamera",
+	// 	/* keyString = */ 			"Key_Z",
+	// 	/* modifiersString = */ 	"NoModifier",
+	// 	/* buttonString = */ 		"",
+	// 	/* wheelString = */ 		"",
+	// 	/* actionString = */ 		"TO_FORDWARD",
+	// 	/* saveToConfigFile = */ 	false
+	// );
+
+	// key_mapping_manager->addAction(    
+    //     /* context = */             "FPSCamera",       
+    //     /* keyString = */           "Key_S",           
+    //     /* modifiersString = */     "NoModifier",           
+    //     /* buttonString = */        "",                    
+    //     /* wheelString = */         "",                    
+    //     /* actionString = */        "TO_BACKWARD",      
+    //     /* saveToConfigFile = */    false               
+    // );
+
+	// key_mapping_manager->addAction(    
+    //     /* context = */             "FPSCamera",       
+    //     /* keyString = */           "Key_D",           
+    //     /* modifiersString = */     "NoModifier",           
+    //     /* buttonString = */        "",                    
+    //     /* wheelString = */         "",                    
+    //     /* actionString = */        "TO_RIGHT",      
+    //     /* saveToConfigFile = */    false               
+    // );
+	
+	// key_mapping_manager->addAction(    
+    //     /* context = */             "FPSCamera",       
+    //     /* keyString = */           "Key_Q",           
+    //     /* modifiersString = */     "NoModifier",           
+    //     /* buttonString = */        "",                    
+    //     /* wheelString = */         "",                    
+    //     /* actionString = */        "TO_LEFT",      
+    //     /* saveToConfigFile = */    false               
+    // );
+
+	// key_mapping_manager->addAction(    
+    //     /* context = */             "FPSCamera",       
+    //     /* keyString = */           "Key_SPACE",           
+    //     /* modifiersString = */     "NoModifier",           
+    //     /* buttonString = */        "",                    
+    //     /* wheelString = */         "",                    
+    //     /* actionString = */        "JUMP",      
+    //     /* saveToConfigFile = */    false               
+    // );
+
+	
+	// KeyMapping::setContext(key_mapping_manager->getContext("FPSCamera"));
+	// // KeyMapping::setContext(KeyMappingManager::getInstance()->getContext("FPSCamera"));
+  
+	// if(KeyMapping::getContext().isInvalid())
+	// {
+  	// 	LOG( Ra::Core::Utils::logINFO ) << "CameraContext not defined (maybe the configuration file do not contains it)";
+  	// 	LOG( Ra::Core::Utils::logERROR ) << "CameraContext all keymapping invalid !";
+  	// 	return;
+	// }
  
 	//#define KMA_VALUE( XX ) XX = key_mapping_manager->getActionIndex( KeyMapping::getContext(), #XX );
   	//KeyMappingCameraManipulatorFPS
  	//#undef KMA_VALUE
-	
+	Gui::KeyMappingManager* key_mapping_manager = Gui::KeyMappingManager::getInstance();
 	TO_FORWARD = key_mapping_manager->getActionIndex(KeyMapping::getContext(), "TO_FORWARD");
 	TO_BACKWARD = key_mapping_manager->getActionIndex(KeyMapping::getContext(), "TO_BACKWARD");
 	TO_LEFT = key_mapping_manager->getActionIndex(KeyMapping::getContext(), "TO_LEFT");
@@ -118,7 +216,7 @@ void CameraManipulatorFPS::configureKeyMapping_impl()
 
 KeyMappingManager::Context CameraManipulatorFPS::mappingContext()
 {
-	return CameraManipulatorFPS::getContext();
+	return KeyMappingCameraManipulatorFPS::getContext();
 }
 
 bool CameraManipulatorFPS::handleMousePressEvent(
@@ -144,7 +242,7 @@ bool CameraManipulatorFPS::handleMousePressEvent(
 bool CameraManipulatorFPS::handleMouseReleaseEvent(QMouseEvent *event)
 {
 
-    m_currentAction = KeyMappingManager::KeyMappingAction::Invalid();
+	m_currentAction = KeyMappingManager::KeyMappingAction::Invalid();
     return true;
 
 }
@@ -157,47 +255,49 @@ bool CameraManipulatorFPS::handleMouseMoveEvent(
     int key)
 {
 
-	if(first_mouse)
-    {
-        last_x = event->pos().x();
-        last_y = event->pos().y();
-        first_mouse = false;
-    }
+	Scalar offset_x = cursor.pos().x() - (m_camera->getWidth() / 2);
+	Scalar offset_y = cursor.pos().y() - (m_camera->getHeight() / 2);
+	
+	Scalar dx = offset_x / m_camera->getWidth();
+    Scalar dy = offset_y / m_camera->getHeight();
+
+	
+    m_quickCameraModifier = 5.0_ra;
+
+	Scalar dphi   = dx * m_cameraSensitivity * m_quickCameraModifier;
+    Scalar dtheta = -dy * m_cameraSensitivity * m_quickCameraModifier;
+	
+
+	if (Ra::Core::Math::PiDiv2 <= theta+dtheta){
+		dtheta = Ra::Core::Math::PiDiv2 - theta;
+		theta = Ra::Core::Math::PiDiv2;
+	}else if (theta+dtheta <= -Ra::Core::Math::PiDiv2){
+		dtheta = Ra::Core::Math::PiDiv2 + theta;
+		theta = -Ra::Core::Math::PiDiv2;
+	}else{
+		theta += dtheta;
+	}
+
   
-    float xoffset = event->pos().x() - last_x;
-    float yoffset = last_y - event->pos().y(); 
-    last_x = event->pos().x();
-    last_y = event->pos().y();
+    Scalar d = ( m_target - m_camera->getPosition() ).norm();
 
-	Core::Vector3 vec_proj = Ra::Core::Math::projectOnPlane(    
-        /* planePos = */ m_camera->getPosition(),    
-        /* planeNormal = */ m_camera->getUpVector(),    
-        /* point = */ m_camera->getPosition() + m_camera->getDirection());	
 
-	Scalar pitch = Ra::Core::Math::angle(
-		/* v1 = */ vec_proj,
-		/* v2 = */ m_camera->getDirection());
+	Core::Transform R1( Core::Transform::Identity() );
+	R1 = Core::AngleAxis( -dphi, /*m_camera->getUpVector().normalized()*/ vector_up );
 
-    float sensitivity = 0.1f;
-    xoffset *= m_cameraSensitivity;
-    yoffset *= m_cameraSensitivity;
+	Core::Transform R2( Core::Transform::Identity() );
+	R2 = Core::AngleAxis( -dtheta, -m_camera->getRightVector().normalized() );
 
-    yaw   += xoffset;
-    pitch += yoffset;
+	
+	m_target = m_camera->getPosition() + d * m_camera->getDirection();
 
-    if(pitch > 89.0f)
-        pitch = 89.0f;
-    if(pitch < -89.0f)
-        pitch = -89.0f;
+	m_camera->applyTransform(R1 * R2);
+    
 
-	Core::Vector3 new_direction;
-    new_direction.x() = cos(Ra::Core::Math::toRadians(yaw)) * cos(Ra::Core::Math::toRadians(pitch));
-    new_direction.y() = sin(Ra::Core::Math::toRadians(pitch));
-    new_direction.z() = sin(Ra::Core::Math::toRadians(yaw)) * cos(Ra::Core::Math::toRadians(pitch));
-    //new_direction = glm::normalize(new_direction);
 
-	m_camera->setPosition(new_direction);
+	this->cursor.setPos(QPoint(m_camera->getWidth() / 2, m_camera->getHeight() / 2));
 
+  
 	return m_currentAction.isValid();
 
 }
@@ -209,8 +309,9 @@ bool CameraManipulatorFPS::handleWheelEvent(
     const Qt::KeyboardModifiers &modifiers,                                                 
     int key)
 {
-                                                       
-    m_currentAction = KeyMappingManager::KeyMappingAction::Invalid();                                    	return true;                                    
+                                                    
+    m_currentAction = KeyMappingManager::KeyMappingAction::Invalid();
+	return true;                                    
                                                        
 }
 
@@ -220,8 +321,10 @@ bool CameraManipulatorFPS::handleKeyPressEvent(
 	const KeyMappingManager::KeyMappingAction &action)
 {
 
+	printf("handleKeyPressEvent\n");
 	if(action == TO_FORWARD)
 	{
+		printf("forward\n");
 		Core::Vector3 point_proj = Ra::Core::Math::projectOnPlane(
             /* planePos = */ m_camera->getPosition(),
             /* planeNormal = */ m_camera->getUpVector(),
@@ -257,6 +360,8 @@ bool CameraManipulatorFPS::handleKeyPressEvent(
 	{
 	}
 
+	// this->updateCamera();
+
 	return m_currentAction.isValid();
 
 }
@@ -266,7 +371,7 @@ bool CameraManipulatorFPS::handleKeyReleaseEvent(
 	QKeyEvent *event, 
 	const KeyMappingManager::KeyMappingAction &action)
 {
-
+	printf("handleKeyReleaseEvent\n");
 	m_currentAction = KeyMappingManager::KeyMappingAction::Invalid();
 	return true;
 
@@ -276,18 +381,18 @@ bool CameraManipulatorFPS::handleKeyReleaseEvent(
 void CameraManipulatorFPS::updateCamera()
 {
 
-	//m_referenceFrame = m_camera->getFrame();
+	// m_referenceFrame = m_camera->getFrame();
 
 }
 
 
-void CameraManipulatorFPS::fitScene(const Core::Aabb &aabb){} 
+void CameraManipulatorFPS::fitScene(const Core::Aabb &aabb){
+  
+} 
 
 
 void CameraManipulatorFPS::setCameraPosition(const Core::Vector3 &position)
 {
-
-
 
 }
 
