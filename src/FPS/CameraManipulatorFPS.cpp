@@ -21,25 +21,17 @@ CameraManipulatorFPS::CameraManipulatorFPS():
 {
 	// m_camera->setPosition(Ra::Core::Vector3(0_ra, 2_ra, 0_ra));
 	vector_up = Ra::Core::Vector3( 0_ra, 1_ra, 0_ra );
-	
 	this->cursor.setPos(m_camera->getWidth() / 2, m_camera->getWidth() / 2);
 	theta = 0.f;
-	// phi = 0.f;
-	Core::Transform R_acc( Core::Transform::Identity() );
+
 }
 
 CameraManipulatorFPS::CameraManipulatorFPS(const Ra::Gui::CameraManipulator& other):	
 	Ra::Gui::CameraManipulator(other)
 {
 	vector_up = Ra::Core::Vector3( 0_ra, 1_ra, 0_ra );;
-	last_x = m_camera->getWidth() / 2;
- 	last_y = m_camera->getHeight() / 2;
-	// crosshair_x = m_camera->getWidth() / 2;
-	// crosshair_y = m_camera->getHeight() / 2;
 	this->cursor.setPos(m_camera->getWidth() / 2, m_camera->getWidth() / 2);
 	theta = 0.f;
-	// phi = 0.f;
-	Core::Transform R_acc( Core::Transform::Identity() );
 }
 
 CameraManipulatorFPS::~CameraManipulatorFPS() {}
@@ -229,8 +221,6 @@ bool CameraManipulatorFPS::handleMousePressEvent(
 	// Core::Vector3 position_shoot = m_camera->getPosition();
 	// Core::Vector3 direction_shoot = m_camera->getDirection();
 	// Compute intersection between straight and and object of scene.
-	last_x = event->pos().x();
-	last_y = event->pos().y();
 
 	m_currentAction = KeyMappingManager::getInstance()->getAction(
 		KeyMapping::getContext(), buttons, modifiers, false);

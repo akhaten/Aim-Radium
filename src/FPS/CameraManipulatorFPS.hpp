@@ -92,18 +92,9 @@ class RA_GUI_API CameraManipulatorFPS :
 	
 	private:
 		QCursor cursor;
-		Core::Transform R_acc;
-		Scalar last_x;
-		Scalar last_y;
-		Scalar crosshair_x;
-		Scalar crosshair_y;
 		Scalar theta;
-		Scalar phi;
 		Ra::Core::Vector3 vector_up;
-		Scalar yaw;
-		bool first_mouse;
 		KeyMappingManager::Context current_context;
-		Core::Transform m_referenceFrame;
 		void configureKeyMapping_impl();
 };
 }
