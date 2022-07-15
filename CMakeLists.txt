@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 cmake_policy(SET CMP0042 NEW)
 
-project(HelloRadium VERSION 1.0.0)
+project(AimRadium VERSION 1.0.0)
 
 # ------------------------------------------------------------------------------
 # set wanted application defaults for cmake settings
@@ -38,9 +38,21 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 
 set(app_sources 
+
 	src/main.cpp
-	src/FPS/CameraManipulatorFPS.cpp
-	src/FPS/CameraManipulatorFPS.hpp
+
+	src/FPS/ShooterFPS.cpp
+	src/FPS/ShooterFPS.hpp
+
+    # src/TargetGenerator/Spot.cpp
+    # src/TargetGenerator/Spot.hpp
+
+    # src/TargetGenerator/TargetGenerator.cpp
+    # src/TargetGenerator/TargetGenerator.hpp
+
+    # src/AimTrainer.cpp
+    # src/AimTrainer.hpp
+
 	)
 
 # to install the app as a redistribuable bundle on macos, add MACOSX_BUNDLE when calling
@@ -114,8 +126,8 @@ configure_radium_app(NAME ${PROJECT_NAME})
 # #)
 
 # set(FPS_SOURCE
-# 	./src/FPS/CameraManipulatorFPS.hpp
-# 	./src/FPS/CameraManipulatorFPS.cpp
+# 	./src/FPS/ShooterFPS.hpp
+# 	./src/FPS/ShooterFPS.cpp
 # )
 # # Executable
 # add_executable(${PROJECT_NAME}
