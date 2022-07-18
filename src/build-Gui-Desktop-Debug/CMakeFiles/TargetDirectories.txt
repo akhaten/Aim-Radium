@@ -1,4 +1,0 @@
-/home/jessy/Documents/github/Aim-Radium/src/build-Gui-Desktop-Debug/CMakeFiles/Gui.dir
-/home/jessy/Documents/github/Aim-Radium/src/build-Gui-Desktop-Debug/CMakeFiles/edit_cache.dir
-/home/jessy/Documents/github/Aim-Radium/src/build-Gui-Desktop-Debug/CMakeFiles/rebuild_cache.dir
-/home/jessy/Documents/github/Aim-Radium/src/build-Gui-Desktop-Debug/CMakeFiles/Gui_autogen.dir

@@ -23,7 +23,7 @@ set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 # ------------------------------------------------------------------------------
-set(CMAKE_PREFIX_PATH ../Radium-Engine/Bundle-GNU/lib/cmake/Radium)
+#set(CMAKE_PREFIX_PATH ../Radium-Engine/Bundle-GNU/lib/cmake/Radium)
 
 if(NOT IN_RADIUM_BUILD_TREE)
     find_package(Radium REQUIRED Core Engine Gui)

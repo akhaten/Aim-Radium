@@ -62,6 +62,12 @@ class RA_GUI_API ShooterFPS :
 		
 		KeyMappingManager::Context mappingContext() override;
 
+		void moveToForward();
+		void moveToBackward();
+		void moveToRight();
+		void moveToLeft();
+
+
 	public slots:
 		void fitScene(const Core::Aabb &aabb) override;
 		void setCameraPosition(const Core::Vector3 &position) override;
@@ -72,31 +78,27 @@ class RA_GUI_API ShooterFPS :
 	protected:
 	
  	#define KeyMappingFPSManipulator	\
-     	KMA_VALUE( TO_FORWARD )		\
+	 	KMA_VALUE( TO_FORWARD )		\
      	KMA_VALUE( TO_BACKWARD )	\
      	KMA_VALUE( TO_LEFT )		\
      	KMA_VALUE( TO_RIGHT )    	\
-     	KMA_VALUE( JUMP )			\
-		KMA_VALUE( ROTATE )			\
-		KMA_VALUE( SHOOT )
+		KMA_VALUE( SHOOT )			\
+		KMA_VALUE( ROTATE )
   
  	#define KMA_VALUE( XX ) static KeyMappingManager::KeyMappingAction XX;
      	KeyMappingFPSManipulator
  	#undef KMA_VALUE
 	
-		// inline static KeyMappingManager::KeyMappingAction TO_FORWARD;
-		// inline static KeyMappingManager::KeyMappingAction TO_BACKWARD;
-		// inline static KeyMappingManager::KeyMappingAction TO_LEFT;
-		// inline static KeyMappingManager::KeyMappingAction TO_RIGHT;
-		// inline static KeyMappingManager::KeyMappingAction JUMP;
-		// inline static KeyMappingManager::KeyMappingAction ROTATE;
 	
 	private:
 		QCursor cursor;
 		Scalar theta;
+		Scalar speed;
 		Core::Vector3 vector_up;
+		// Gui::KeyMappingManager* key_mapping_manager;
 		KeyMappingManager::Context current_context;
-		void configureKeyMapping_impl();
+		static void configureKeyMapping_impl();
+
 };
 }
 }

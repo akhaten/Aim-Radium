@@ -1,3 +1,8 @@
+
+
+
+
+
 #include <iostream>
 
 
@@ -25,11 +30,9 @@
 
 
 
-// #include <Gui/Viewer/FlightCameraManipulator.hpp>
+#include <Gui/Viewer/FlightCameraManipulator.hpp>
 // My FPS application
 #include "FPS/ShooterFPS.hpp"
-
-
 
 
 const std::string vertex_shader {
@@ -50,52 +53,98 @@ const std::string fragment_shader {
     "}\n"
 };
 
-// const std::vector<std::pair<Ra::Engine::Data::ShaderType, std::string>> config_crosshair {
-//     { Ra::Engine::Data::ShaderType::ShaderType_VERTEX, vertex_shader },
-//     { Ra::Engine::Data::ShaderType::ShaderType_FRAGMENT, fragment_shader } 
-// };
+/**
+ * Simple custom windows for custom KeyEvent demonstration
+ */
+class DemoWindow : public Ra::Gui::SimpleWindow
+{
+    // Q_OBJECT
 
-// class MyParameterProvider : public Ra::Engine::Data::ShaderParameterProvider
-// {
-//   public:
-//     MyParameterProvider() {}
-//     ~MyParameterProvider() {}
-//     void updateGL() override {
-//         // Method called before drawing each frame in Renderer::updateRenderObjectsInternal.
-//         // The name of the parameter corresponds to the shader's uniform name.
-//         m_renderParameters.addParameter( "aColorUniform", m_colorParameter );
-//         m_renderParameters.addParameter( "aScalarUniform", m_scalarParameter );
-//     }
-//     void setOrComputeTheParameterValues() {
-//         // client side computation of the parameters, e.g.
-//         m_colorParameter  = Ra::Core::Utils::Color::Red();
-//         m_scalarParameter = .5_ra;
-//     }
+  public:
+    /// Reuse the SimpleWindow constructors
+    using Ra::Gui::SimpleWindow::SimpleWindow;
 
-//   private:
-//     Ra::Core::Utils::Color m_colorParameter { Ra::Core::Utils::Color::Green() };
-//     Scalar m_scalarParameter { 1 };
-// };
+    explicit DemoWindow( uint w = 800, uint h = 640, QWidget* parent = nullptr ) :
+        Ra::Gui::SimpleWindow::SimpleWindow( w, h, parent ) {
+        //! [Initialize KeyEvent context and actions for demo window]
+        //! [Initialize KeyEvent context and actions for demo window]
+    
+    //    auto viewer =  getViewer();
+    //    shooter = new Ra::Gui::ShooterFPS(*(viewer->getCameraManipulator()));
+    //    viewer->setCameraManipulator(shooter);
+    
+    }
 
+    void configure() override {
+
+        TO_FORWARD = getViewer()->addKeyPressEventAction(
+            "TO_FORWARD", "Key_Z", "", "", "false", [this]( QKeyEvent* event ) {
+                Ra::Gui::ShooterFPS* shooter = dynamic_cast<Ra::Gui::ShooterFPS*>(getViewer()->getCameraManipulator());
+                shooter->moveToForward();
+                printf("TO_FORWARD\n");
+            } );
+        TO_BACKWARD = getViewer()->addKeyPressEventAction(
+            "TO_BACKWARD", "Key_S", "", "", "false", [this]( QKeyEvent* event ) {
+                Ra::Gui::ShooterFPS* shooter = dynamic_cast<Ra::Gui::ShooterFPS*>(getViewer()->getCameraManipulator());
+                shooter->moveToBackward();
+                printf("TO_BACKWARD\n");
+            } );
+        TO_LEFT = getViewer()->addKeyReleaseEventAction(
+            "TO_LEFT", "Key_Q", "", "", "false", [this]( QKeyEvent* event ) {
+                Ra::Gui::ShooterFPS* shooter = dynamic_cast<Ra::Gui::ShooterFPS*>(getViewer()->getCameraManipulator());
+                shooter->moveToLeft();
+                printf("TO_LEFT\n");
+            } );
+        TO_RIGHT = getViewer()->addKeyReleaseEventAction(
+            "TO_RIGHT", "Key_D", "", "", "false", [this]( QKeyEvent* event ) {
+                Ra::Gui::ShooterFPS* shooter = dynamic_cast<Ra::Gui::ShooterFPS*>(getViewer()->getCameraManipulator());
+                shooter->moveToRight();
+                printf("TO_RIGHT\n");
+            } );
+
+    }
+
+    //! [Manage KeyEvent reaching the window]
+    private:
+        //! [KeyEvent for demo window]
+        Ra::Gui::KeyMappingManager::Context m_demoContext {};
+
+        Ra::Gui::KeyMappingManager::KeyMappingAction TO_FORWARD;
+        Ra::Gui::KeyMappingManager::KeyMappingAction TO_BACKWARD;
+        Ra::Gui::KeyMappingManager::KeyMappingAction TO_LEFT;
+        Ra::Gui::KeyMappingManager::KeyMappingAction TO_RIGHT;
+        Ra::Gui::KeyMappingManager::KeyMappingAction JUMP;
+    
+
+    public:
+    //    Ra::Gui::ShooterFPS* shooter;
+};
+
+/**
+ * Define a factory that set instanciate the Demonstration Window
+ */
+class DemoWindowFactory : public Ra::Gui::BaseApplication::WindowFactory
+{
+  public:
+    ~DemoWindowFactory() = default;
+    inline Ra::Gui::MainWindowInterface* createMainWindow() const override {
+        auto window = new DemoWindow();
+        return window;
+    }
+};
 int main( int argc, char* argv[] ) {
 
     //! [Creating the application]
     Ra::Gui::BaseApplication app( argc, argv );
     app.setOverrideCursor(Qt::BlankCursor);
-    app.initialize( Ra::Gui::SimpleWindowFactory {} );
+    // app.initialize( Ra::Gui::SimpleWindowFactory {} );
+    app.initialize(DemoWindowFactory{});
 
-    auto crosshair_config = Ra::Engine::Data::ShaderConfiguration("Crosshair", vertex_shader, fragment_shader);
+    // auto crosshair_config = Ra::Engine::Data::ShaderConfiguration("Crosshair", vertex_shader, fragment_shader);
     // auto shader_program = Ra::Engine::Data::ShaderProgram(crosshair_config);
+    // auto m_shaderProgram = app.m_engine->getShaderProgramManager();
+    // m_shaderProgram->addShaderProgram(crosshair_config);
 
-//     auto m_shaderProgram = app.m_engine->getShaderProgramManager();
-//     m_shaderProgram->addShaderProgram(crosshair_config);
-//     Ra::Core::Geometry::makePlaneGrid
-//     Ra::Core::Vector3Array v;
-//     v.push_back(Ra::Core::Vector3( 0_ra, 1_ra, 0_ra ));
-//     v.push_back(Ra::Core::Vector3( 0_ra, 2_ra, 0_ra ));
-// //    Ra::Core::Geometry::LineStrip::
-//     auto pl = Ra::Core::Geometry::PolyLine::PolyLine{v};
-    // Ra::Core::Geometry::LineMesh::append_attrib()
 
     
     auto sphere = Ra::Core::Geometry::makeParametricSphere(0.5_ra);
@@ -115,11 +164,13 @@ int main( int argc, char* argv[] ) {
 
     app.m_mainWindow->prepareDisplay();
  
-    auto viewer = app.m_mainWindow->getViewer();
+    auto appWindow = dynamic_cast<DemoWindow*>( app.m_mainWindow.get() );
+    auto viewer = appWindow->getViewer();;
+    // auto shooter = new Ra::Gui::FlightCameraManipulator( *( viewer->getCameraManipulator() ) );
     auto shooter = new Ra::Gui::ShooterFPS( *( viewer->getCameraManipulator() ) );
     viewer->setCameraManipulator( shooter );
+    
 
-    // viewer->setCameraManipulator( new Ra::Gui::FlightCameraManipulator( *( viewer->getCameraManipulator() ) ) );
     // auto m_entity = app.m_engine->getEntityManager();
     // m_entity->removeEntity(e);
     

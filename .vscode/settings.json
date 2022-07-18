@@ -1,4 +1,8 @@
 {
+    "cmake.configureArgs": [
+        "-DCMAKE_PREFIX_PATH=../Radium-Engine/Bundle-GNU/lib/cmake/Radium "
+    ],
+
     "files.associations": {
         "array": "cpp",
         "atomic": "cpp",

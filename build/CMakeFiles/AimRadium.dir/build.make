@@ -139,7 +139,7 @@ AimRadium: /home/jessy/Documents/workspace-ter/radium-external/install-r/lib/lib
 AimRadium: /home/jessy/Documents/workspace-ter/radium-external/install-r/lib/libcpplocate.so.2.2.1
 AimRadium: /usr/lib/gcc/x86_64-pc-linux-gnu/11.3.0/libgomp.so
 AimRadium: /usr/lib/libpthread.a
-AimRadium: /home/jessy/Documents/workspace-ter/radium-external/install-r/lib/libassimp.so.5
+AimRadium: assimp::assimp-NOTFOUND
 AimRadium: /home/jessy/Documents/workspace-ter/radium-external/install-r/lib/libtinyply.so
 AimRadium: /usr/lib/libQt6Widgets.so.6.3.1
 AimRadium: /usr/lib/libQt6Gui.so.6.3.1

@@ -68,7 +68,7 @@ include CMakeFiles/AimRadium_autogen.dir/progress.make
 
 CMakeFiles/AimRadium_autogen:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/jessy/Documents/workspace-ter/Aim-Radium/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC for target AimRadium"
-	/usr/bin/cmake -E cmake_autogen /home/jessy/Documents/workspace-ter/Aim-Radium/build/CMakeFiles/AimRadium_autogen.dir/AutogenInfo.json Release
+	/usr/bin/cmake -E cmake_autogen /home/jessy/Documents/workspace-ter/Aim-Radium/build/CMakeFiles/AimRadium_autogen.dir/AutogenInfo.json Debug
 
 AimRadium_autogen: CMakeFiles/AimRadium_autogen
 AimRadium_autogen: CMakeFiles/AimRadium_autogen.dir/build.make
