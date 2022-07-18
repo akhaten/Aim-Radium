@@ -53,6 +53,7 @@ ShooterFPS::ShooterFPS():
 {
 
 	vector_up = Ra::Core::Vector3( 0_ra, 1_ra, 0_ra );
+	vector_forward = Ra::Core::Vector3( 0_ra, 0_ra, 1_ra );
 	this->cursor.setPos(m_camera->getWidth() / 2, m_camera->getWidth() / 2);
 	theta = 0_ra;
 	Ra::Core::Transform transform_t( Ra::Core::Transform::Identity() );
@@ -67,17 +68,14 @@ ShooterFPS::ShooterFPS():
 ShooterFPS::ShooterFPS(const Ra::Gui::CameraManipulator& other):	
 	Ra::Gui::CameraManipulator(other)
 {
-	vector_up = Ra::Core::Vector3( 0_ra, 1_ra, 0_ra );;
+	vector_up = Ra::Core::Vector3( 0_ra, 1_ra, 0_ra );
+	vector_forward = Ra::Core::Vector3( 0_ra, 0_ra, 1_ra );
 	this->cursor.setPos(m_camera->getWidth() / 2, m_camera->getWidth() / 2);
 	theta = 0_ra;
 	Ra::Core::Transform transform_t( Ra::Core::Transform::Identity() );
     transform_t.translation() = Ra::Core::Vector3(0_ra, 3_ra, 0_ra);
 	m_camera->applyTransform(transform_t);
 	speed = 0.1_ra;
-	// Ra::Gui::KeyMappingManager::createInstance();
-	// Ra::Gui::KeyMappingManager::getInstance()->addListener(Ra::Gui::ShooterFPS::KeyMapping::configureKeyMapping);
-	// key_mapping_manager = Gui::KeyMappingManager::getInstance();
-	// key_mapping_manager->addListener(Ra::Gui::ShooterFPS::KeyMapping::configureKeyMapping);
 }
 
 ShooterFPS::~ShooterFPS() {}
@@ -94,14 +92,14 @@ bool ShooterFPS::handleMousePressEvent(
 	// Core::Vector3 position_shoot = m_camera->getPosition();
 	// Core::Vector3 direction_shoot = m_camera->getDirection();
 	// Compute intersection between straight and and object of scene.
-	printf("handleMousePressEvent\n");
+	// printf("handleMousePressEvent\n");
 	m_currentAction = KeyMappingManager::getInstance()->getAction(
 		KeyMapping::getContext(), buttons, modifiers, false);
 
-	if(m_currentAction == ROTATE)
-	{
-		printf("RATOTE\n");
-	}
+	// if(m_currentAction == ROTATE)
+	// {
+	// 	printf("RATOTE\n");
+	// }
 
 	return m_currentAction.isValid();
 	
@@ -109,7 +107,7 @@ bool ShooterFPS::handleMousePressEvent(
 
 bool ShooterFPS::handleMouseReleaseEvent(QMouseEvent *event)
 {
-	printf("handleMouseReleaseEvent\n");
+	// printf("handleMouseReleaseEvent\n");
 	m_currentAction = KeyMappingManager::KeyMappingAction::Invalid();
     return true;
 
@@ -123,7 +121,7 @@ bool ShooterFPS::handleMouseMoveEvent(
     int key)
 {
 
-	printf("handleMouseMoveEvent\n");
+	// printf("handleMouseMoveEvent\n");
 	Scalar offset_x = cursor.pos().x() - (m_camera->getWidth() / 2);
 	Scalar offset_y = cursor.pos().y() - (m_camera->getHeight() / 2);
 	
@@ -168,35 +166,8 @@ bool ShooterFPS::handleMouseMoveEvent(
 		m_camera->applyTransform(R);
 	}
 
-  
-    // theta += dtheta;
-
-	
-
-	// Core::Transform R( Core::Transform::Identity() );
-	// if ( std::abs( dphi ) > std::abs( dtheta ) ) {
-	// 	R = Core::AngleAxis( -dphi, vector_up );
-	// }else{
-	// 	R = Core::AngleAxis( -dtheta, -m_camera->getRightVector().normalized() );
-	// }
-
-	// Scalar d = ( m_target - m_camera->getPosition() ).norm();
-	// m_target = m_camera->getPosition() + d * m_camera->getDirection();
-
-	// m_camera->applyTransform(R);
-	
-
-
 	this->cursor.setPos(QPoint(m_camera->getWidth() / 2, m_camera->getHeight() / 2));
-	// glm::degrees()
-	// printf("to rad : %f\n", glm::radians(89.0f));
 	
-	// printf("theta : %f, %f\n", theta, Ra::Core::Math::toDegrees(theta));
-	// printf("dtheta : %f, %f\n", dtheta, glm::degrees(dtheta));
-	// printf("camera size : (%f, %f)\n", m_camera->getWidth(), m_camera->getHeight());
-	// printf("cursor : (%f, %f)\n", cursor.pos().x(), cursor.pos().y());
-	
-  
 	return m_currentAction.isValid();
 
 }
@@ -229,7 +200,7 @@ bool ShooterFPS::handleKeyReleaseEvent(
 	QKeyEvent *event, 
 	const KeyMappingManager::KeyMappingAction &action)
 {
-	printf("handleKeyReleaseEvent\n");
+	// printf("handleKeyReleaseEvent\n");
 	m_currentAction = KeyMappingManager::KeyMappingAction::Invalid();
 	return true;
 
@@ -286,6 +257,7 @@ void ShooterFPS::moveToForward()
 
 	Ra::Core::Transform forward_t( Ra::Core::Transform::Identity() );
     forward_t.translation() = speed*vec_proj.normalized();
+	// forward_t.translation() = speed*vector_forward.normalized();
 	m_camera->applyTransform(forward_t);
 }
 

@@ -95,6 +95,7 @@ class RA_GUI_API ShooterFPS :
 		Scalar theta;
 		Scalar speed;
 		Core::Vector3 vector_up;
+		Core::Vector3 vector_forward;
 		// Gui::KeyMappingManager* key_mapping_manager;
 		KeyMappingManager::Context current_context;
 		static void configureKeyMapping_impl();

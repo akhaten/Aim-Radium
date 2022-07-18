@@ -44,6 +44,9 @@ set(app_sources
 	src/FPS/ShooterFPS.cpp
 	src/FPS/ShooterFPS.hpp
 
+    src/AimRadium.cpp
+    src/AimRadium.hpp
+
     # src/TargetGenerator/Spot.cpp
     # src/TargetGenerator/Spot.hpp
 

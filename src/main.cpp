@@ -1,8 +1,3 @@
-
-
-
-
-
 #include <iostream>
 
 
@@ -31,7 +26,9 @@
 
 
 #include <Gui/Viewer/FlightCameraManipulator.hpp>
+
 // My FPS application
+#include "AimRadium.hpp"
 #include "FPS/ShooterFPS.hpp"
 
 
@@ -53,92 +50,37 @@ const std::string fragment_shader {
     "}\n"
 };
 
-/**
- * Simple custom windows for custom KeyEvent demonstration
- */
-class DemoWindow : public Ra::Gui::SimpleWindow
-{
-    // Q_OBJECT
 
-  public:
-    /// Reuse the SimpleWindow constructors
-    using Ra::Gui::SimpleWindow::SimpleWindow;
 
-    explicit DemoWindow( uint w = 800, uint h = 640, QWidget* parent = nullptr ) :
-        Ra::Gui::SimpleWindow::SimpleWindow( w, h, parent ) {
-        //! [Initialize KeyEvent context and actions for demo window]
-        //! [Initialize KeyEvent context and actions for demo window]
-    
-    //    auto viewer =  getViewer();
-    //    shooter = new Ra::Gui::ShooterFPS(*(viewer->getCameraManipulator()));
-    //    viewer->setCameraManipulator(shooter);
-    
-    }
+// bool eventFilter(QObject * obj, QEvent * event)
+// {
 
-    void configure() override {
+//     if ( event->type() == QEvent::KeyPress ) {
 
-        TO_FORWARD = getViewer()->addKeyPressEventAction(
-            "TO_FORWARD", "Key_Z", "", "", "false", [this]( QKeyEvent* event ) {
-                Ra::Gui::ShooterFPS* shooter = dynamic_cast<Ra::Gui::ShooterFPS*>(getViewer()->getCameraManipulator());
-                shooter->moveToForward();
-                printf("TO_FORWARD\n");
-            } );
-        TO_BACKWARD = getViewer()->addKeyPressEventAction(
-            "TO_BACKWARD", "Key_S", "", "", "false", [this]( QKeyEvent* event ) {
-                Ra::Gui::ShooterFPS* shooter = dynamic_cast<Ra::Gui::ShooterFPS*>(getViewer()->getCameraManipulator());
-                shooter->moveToBackward();
-                printf("TO_BACKWARD\n");
-            } );
-        TO_LEFT = getViewer()->addKeyReleaseEventAction(
-            "TO_LEFT", "Key_Q", "", "", "false", [this]( QKeyEvent* event ) {
-                Ra::Gui::ShooterFPS* shooter = dynamic_cast<Ra::Gui::ShooterFPS*>(getViewer()->getCameraManipulator());
-                shooter->moveToLeft();
-                printf("TO_LEFT\n");
-            } );
-        TO_RIGHT = getViewer()->addKeyReleaseEventAction(
-            "TO_RIGHT", "Key_D", "", "", "false", [this]( QKeyEvent* event ) {
-                Ra::Gui::ShooterFPS* shooter = dynamic_cast<Ra::Gui::ShooterFPS*>(getViewer()->getCameraManipulator());
-                shooter->moveToRight();
-                printf("TO_RIGHT\n");
-            } );
+//         pressedKeys += ((QKeyEvent*)event)->key();
 
-    }
+//         if ( pressedKeys.contains(Qt::Key_D) && pressedKeys.contains(Qt::Key_W) )
+//         {
+//             // D and W are pressed
+//         }
 
-    //! [Manage KeyEvent reaching the window]
-    private:
-        //! [KeyEvent for demo window]
-        Ra::Gui::KeyMappingManager::Context m_demoContext {};
+//     }
+//     else if ( event->type() == QEvent::KeyRelease )
+//     {
 
-        Ra::Gui::KeyMappingManager::KeyMappingAction TO_FORWARD;
-        Ra::Gui::KeyMappingManager::KeyMappingAction TO_BACKWARD;
-        Ra::Gui::KeyMappingManager::KeyMappingAction TO_LEFT;
-        Ra::Gui::KeyMappingManager::KeyMappingAction TO_RIGHT;
-        Ra::Gui::KeyMappingManager::KeyMappingAction JUMP;
-    
+//         pressedKeys -= ((QKeyEvent*)event)->key();
+//     }
 
-    public:
-    //    Ra::Gui::ShooterFPS* shooter;
-};
 
-/**
- * Define a factory that set instanciate the Demonstration Window
- */
-class DemoWindowFactory : public Ra::Gui::BaseApplication::WindowFactory
-{
-  public:
-    ~DemoWindowFactory() = default;
-    inline Ra::Gui::MainWindowInterface* createMainWindow() const override {
-        auto window = new DemoWindow();
-        return window;
-    }
-};
+//     return false;
+// }
 int main( int argc, char* argv[] ) {
 
     //! [Creating the application]
     Ra::Gui::BaseApplication app( argc, argv );
     app.setOverrideCursor(Qt::BlankCursor);
     // app.initialize( Ra::Gui::SimpleWindowFactory {} );
-    app.initialize(DemoWindowFactory{});
+    app.initialize(AimRadiumFactory{});
 
     // auto crosshair_config = Ra::Engine::Data::ShaderConfiguration("Crosshair", vertex_shader, fragment_shader);
     // auto shader_program = Ra::Engine::Data::ShaderProgram(crosshair_config);
@@ -164,7 +106,8 @@ int main( int argc, char* argv[] ) {
 
     app.m_mainWindow->prepareDisplay();
  
-    auto appWindow = dynamic_cast<DemoWindow*>( app.m_mainWindow.get() );
+    auto appWindow = dynamic_cast<AimRadium*>( app.m_mainWindow.get() );
+    // appWindow->installEventFilter();
     auto viewer = appWindow->getViewer();;
     // auto shooter = new Ra::Gui::FlightCameraManipulator( *( viewer->getCameraManipulator() ) );
     auto shooter = new Ra::Gui::ShooterFPS( *( viewer->getCameraManipulator() ) );
