@@ -1,5 +1,5 @@
 # Aim-Radium
-Aim trainer
+Aim trainer (Like AimLab)
 
 Dependencies:
 
