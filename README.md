@@ -1,9 +1,15 @@
 # Aim-Radium
 Aim trainer
 
+Dependencies:
+
+Install Radium-Engine (https://github.com/STORM-IRIT/Radium-Engine/tree/release-candidate)
+
+To compile my application :
 ```bash
-cd build-r
+mkdir build
+cd build
 cmake .. -DCMAKE_PREFIX_PATH=../Radium-Engine/Bundle-GNU/lib/cmake/Radium
 make
-./AimRadium
+./StaticTrainer  or ./AnimationTrainer
 ```
