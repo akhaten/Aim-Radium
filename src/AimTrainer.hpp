@@ -1,18 +1,35 @@
 #ifndef AIM_TRAINER_HPP
 #define AIM_TRAINER_HPP
 
-#include "FPS/CameraManipulatorFPS.hpp"
-#include "TargetGenerator/TargetGenerator.hpp"
+#include <Engine/Scene/EntityManager.hpp>
+
+#include "Spot.hpp"
+
+#include "Target.hpp"
+
+
+
+// #include "TargetGenerator/TargetGenerator.hpp"
 
 class AimTrainer
 {
 
-    private:
-        AimTrainer();
-        Ra::Gui::CameraManipulatorFPS m_cameraFPS;
-        TargetGenerator generator_t;
-
     public:
+        AimTrainer(Ra::Engine::Scene::System* system, Ra::Engine::Scene::EntityManager* entity_manager, unsigned int nb_target=1);
+        ~AimTrainer();
+        void add_spot(Spot* spot);
+        bool target_shooted(Ra::Core::Ray ray);
+        void initialize();
+
+    private:
+
+        unsigned int nb_target;
+        Scalar radius;
+        std::vector<Target*> targets;
+        std::vector<Spot*> spots;
+
+        Ra::Engine::Scene::System* system;
+        Ra::Engine::Scene::EntityManager* entity_manager;
         
 
 

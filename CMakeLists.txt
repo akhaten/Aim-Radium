@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 cmake_policy(SET CMP0042 NEW)
 
-project(AimRadium VERSION 1.0.0)
+# project(AimRadium VERSION 1.0.0)
 
 # ------------------------------------------------------------------------------
 # set wanted application defaults for cmake settings
@@ -37,30 +37,48 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 
 
+
+include_directories(src)
+# add_subdirectory(examples/StaticTrainer)
+# add_subdirectory(examples/AnimationTrainer)
+
 set(app_sources 
-
-	src/main.cpp
-
-	src/FPS/ShooterFPS.cpp
-	src/FPS/ShooterFPS.hpp
 
     src/AimRadium.cpp
     src/AimRadium.hpp
 
-    # src/TargetGenerator/Spot.cpp
-    # src/TargetGenerator/Spot.hpp
+    src/AimTrainer.cpp
+    src/AimTrainer.hpp
 
-    # src/TargetGenerator/TargetGenerator.cpp
-    # src/TargetGenerator/TargetGenerator.hpp
+    src/Target.cpp
+    src/Target.hpp
 
-    # src/AimTrainer.cpp
-    # src/AimTrainer.hpp
+    src/Spot.cpp
+    src/Spot.hpp
 
-	)
+    src/Animation/AnimationDatas.cpp
+    src/Animation/AnimationDatas.hpp
+
+    src/Animation/Animation.cpp
+    src/Animation/Animation.hpp
+
+    src/Animation/AnimationSystem.cpp
+    src/Animation/AnimationSystem.hpp
+
+    src/Map.cpp
+    src/Map.hpp
+
+    src/Crosshair.cpp
+    src/Crosshair.hpp
+
+    src/ShooterFPS.cpp
+	src/ShooterFPS.hpp
+
+)
 
 # to install the app as a redistribuable bundle on macos, add MACOSX_BUNDLE when calling
-# add_executable
-add_executable(${PROJECT_NAME} ${app_sources})
+
+# add_executable(${PROJECT_NAME} ${app_sources})
 
 # if("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
 #     target_compile_options(
@@ -81,130 +99,20 @@ add_executable(${PROJECT_NAME} ${app_sources})
 #     )
 # endif()
 
+set(animation examples/AnimationTrainer/main.cpp ${app_sources})
+add_executable(AnimationTrainer ${animation})
 target_link_libraries(
-    ${PROJECT_NAME} PUBLIC Radium::Core Radium::Engine Radium::Gui ${Qt_LIBRARIES}
+    AnimationTrainer PUBLIC Radium::Core Radium::Engine Radium::Gui ${Qt_LIBRARIES}
 )
+target_compile_options(AnimationTrainer PRIVATE PUBLIC ${DEFAULT_COMPILE_OPTIONS} INTERFACE)
+configure_radium_app(NAME AnimationTrainer)
 
-target_compile_options(${PROJECT_NAME} PRIVATE PUBLIC ${DEFAULT_COMPILE_OPTIONS} INTERFACE)
-
-configure_radium_app(NAME ${PROJECT_NAME})
-
-
-# cmake_minimum_required(VERSION 3.10)
-
-# project(Aim-Radium)
-
-# set(CMAKE_CXX_STANDARD 11)
-# set(CMAKE_CXX_STANDARD_REQUIRED True)
-# set(CMAKE_BUILD_TYPE Release)
-
-# set(CMAKE_PREFIX_PATH ../Radium-Engine/Bundle-GNU/lib/cmake/Radium)
-# #set(Radium_Dir ./libs/Radium-Engine/Bundle-GNU/lib/cmake/Radium)
-
-# include_directories(
-# 	./libs/Radium-Engine/Bundle-GNU/include
-# 	./src/Gui
-# )
+set(static examples/StaticTrainer/main.cpp ${app_sources})
+add_executable(StaticTrainer ${static})
+target_link_libraries(
+    StaticTrainer PUBLIC Radium::Core Radium::Engine Radium::Gui ${Qt_LIBRARIES}
+)
+target_compile_options(StaticTrainer PRIVATE PUBLIC ${DEFAULT_COMPILE_OPTIONS} INTERFACE)
+configure_radium_app(NAME StaticTrainer)
 
 
-# # Radium-Engine
-# find_package(Radium REQUIRED Core Engine Gui IO PluginBase)
-# set(RADIUM_LIB Radium::Core Radium::Engine Radium::IO Radium::Gui)
-
-# # Qt5
-
-
-# #set(CMAKE_AUTOUIC ON)
-# set(CMAKE_AUTOMOC ON)
-# #set(CMAKE_AUTORCC ON)
-
-# find_package(Qt5 COMPONENTS Core Widgets OpenGL REQUIRED)
-# set(QT5_LIB Qt5::Core Qt5::Widgets Qt5::OpenGL)
-# #qt5_wrap_ui(app_uis_moc ./src/Gui/MainWindow.ui)
-
-# #set(GUI_SOURCE
-# #	./src/Gui/MainWindow.hpp
-# #	./src/Gui/MainWindow.cpp
-# #	#./src/Gui/ui_MainWindow.hpp
-# #)
-
-# set(FPS_SOURCE
-# 	./src/FPS/ShooterFPS.hpp
-# 	./src/FPS/ShooterFPS.cpp
-# )
-# # Executable
-# add_executable(${PROJECT_NAME}
-# 	./src/main.cpp
-# 	#${GUI_SOURCE}
-# 	#${FPS_SOURCE}
-# )
-
-# target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
-# target_include_directories(
-#     ${PROJECT_NAME} PRIVATE ${RADIUM_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR} # Moc
-#                             ${CMAKE_CURRENT_SOURCE_DIR}
-# )
-
-# target_link_libraries(Aim-Radium ${RADIUM_LIB} ${QT5_LIB})
-
-# configure_radium_app(NAME ${PROJECT_NAME})
-
-#####################################################################################################
-#project(Aim-Radium VERSION 0.1)
-
-#if (NOT CMAKE_BUILD_TYPE)
-#	set(CMAKE_BUILD_TYPE Release)
-#endif ()
-
-
-#find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
-#set(Qt5_LIBRARIES Qt5::Core Qt5::Widgets)
-#set(CMAKE_AUTOMOC ON)
-#set(CMAKE_AUTORCC ON)
-#set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-
-
-#set(Radium_DIR ./libs/Radium-Engine/Bundle-GNU/lib/cmake/Radium)
-
-#find_package(Radium REQUIRED Core Engine Gui PluginBase IO)
-
-#set(app_sources
-#        ./src/main.cpp
-#)
-
-
-#set(app_uis
-#Gui/ui/MainWindow.ui)
-
-#qt5_wrap_ui(app_uis_moc ${app_uis})
-
-
-#add_executable(${PROJECT_NAME}
-#${app_sources}
-#${headers}
-#${app_uis_moc}
-#)
-
-#target_include_directories(${PROJECT_NAME} PRIVATE
-	#${RADIUM_INCLUDE_DIRS}
-#${CMAKE_CURRENT_BINARY_DIR} # Moc
-#${CMAKE_CURRENT_SOURCE_DIR}
-#)
-
-# Include Radium
-#include_directories(./libs/Radium-Engine/Bundle-GNU/include)
-
-# Linking
-#target_link_libraries(${PROJECT_NAME}
-#Radium::Core
-#Radium::Engine
-#Radium::Gui
-#Radium::IO
-#${Qt5_LIBRARIES}
-#)
-
-#configure_radium_app(
-	#NAME ${PROJECT_NAME}
-#USE_PLUGINS
-#)

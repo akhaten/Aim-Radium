@@ -8,8 +8,14 @@
 #include <Core/Asset/Camera.hpp>
 #include <Engine/Scene/CameraComponent.hpp>
 #include <Gui/Viewer/CameraManipulator.hpp>
+#include <Engine/Scene/Light.hpp>
+
 
 #include <QCursor>
+// #include <QPainter>
+
+#include "AimTrainer.hpp"
+#include "Crosshair.hpp"
 
 namespace Ra {
 namespace Gui {
@@ -66,7 +72,8 @@ class RA_GUI_API ShooterFPS :
 		void moveToBackward();
 		void moveToRight();
 		void moveToLeft();
-
+		void setAimTrainer(AimTrainer& aim_trainer);
+		void setCrosshair(Crosshair& crosshair);
 
 	public slots:
 		void fitScene(const Core::Aabb &aabb) override;
@@ -99,6 +106,11 @@ class RA_GUI_API ShooterFPS :
 		// Gui::KeyMappingManager* key_mapping_manager;
 		KeyMappingManager::Context current_context;
 		static void configureKeyMapping_impl();
+
+
+		AimTrainer* aim_trainer;
+		Crosshair* crosshair;
+		void updateCrosshair();
 
 };
 }

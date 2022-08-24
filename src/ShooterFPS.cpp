@@ -1,9 +1,11 @@
 #include "ShooterFPS.hpp"
 
+#include <Core/Types.hpp>
 #include <Gui/Utils/KeyMappingManager.hpp>
 #include <Core/Math/LinearAlgebra.hpp>
 #include <Core/Math/Math.hpp>
-#include <glm/glm.hpp>
+
+
 
 
 
@@ -57,25 +59,26 @@ ShooterFPS::ShooterFPS():
 	this->cursor.setPos(m_camera->getWidth() / 2, m_camera->getWidth() / 2);
 	theta = 0_ra;
 	Ra::Core::Transform transform_t( Ra::Core::Transform::Identity() );
-    transform_t.translation() = Ra::Core::Vector3(0_ra, 3_ra, 0_ra);
+    transform_t.translation() = Ra::Core::Vector3(0_ra, 0.5_ra, 0_ra);
 	m_camera->applyTransform(transform_t);
 	speed = 0.1_ra;
-	// Ra::Gui::KeyMappingManager::createInstance();
-	// Ra::Gui::KeyMappingManager::getInstance()->addListener(Ra::Gui::ShooterFPS::KeyMapping::configureKeyMapping);
+	this->aim_trainer = nullptr;
 	
 }
 
 ShooterFPS::ShooterFPS(const Ra::Gui::CameraManipulator& other):	
 	Ra::Gui::CameraManipulator(other)
 {
+
 	vector_up = Ra::Core::Vector3( 0_ra, 1_ra, 0_ra );
 	vector_forward = Ra::Core::Vector3( 0_ra, 0_ra, 1_ra );
 	this->cursor.setPos(m_camera->getWidth() / 2, m_camera->getWidth() / 2);
 	theta = 0_ra;
 	Ra::Core::Transform transform_t( Ra::Core::Transform::Identity() );
-    transform_t.translation() = Ra::Core::Vector3(0_ra, 3_ra, 0_ra);
+    transform_t.translation() = Ra::Core::Vector3(0_ra, 0.5_ra, 0_ra);
 	m_camera->applyTransform(transform_t);
 	speed = 0.1_ra;
+	this->aim_trainer = nullptr;
 }
 
 ShooterFPS::~ShooterFPS() {}
@@ -89,17 +92,20 @@ bool ShooterFPS::handleMousePressEvent(
 	int key)
 {
 	// SHOOT !?
-	// Core::Vector3 position_shoot = m_camera->getPosition();
-	// Core::Vector3 direction_shoot = m_camera->getDirection();
-	// Compute intersection between straight and and object of scene.
-	// printf("handleMousePressEvent\n");
-	m_currentAction = KeyMappingManager::getInstance()->getAction(
-		KeyMapping::getContext(), buttons, modifiers, false);
+	
+	
+	if(this->aim_trainer != nullptr){
 
-	// if(m_currentAction == ROTATE)
-	// {
-	// 	printf("RATOTE\n");
-	// }
+		Core::Vector3 position_shoot = m_camera->getPosition();
+		auto ray = this->m_camera->getRayFromScreen(Ra::Core::Vector2(m_camera->getWidth() / 2, m_camera->getHeight() / 2));
+		bool target_touched = this->aim_trainer->target_shooted(ray);
+
+	}
+
+	// m_currentAction = KeyMappingManager::getInstance()->getAction(
+		// KeyMapping::getContext(), buttons, modifiers, false);
+
+
 
 	return m_currentAction.isValid();
 	
@@ -107,8 +113,9 @@ bool ShooterFPS::handleMousePressEvent(
 
 bool ShooterFPS::handleMouseReleaseEvent(QMouseEvent *event)
 {
-	// printf("handleMouseReleaseEvent\n");
+	
 	m_currentAction = KeyMappingManager::KeyMappingAction::Invalid();
+	this->updateCrosshair();
     return true;
 
 }
@@ -167,6 +174,29 @@ bool ShooterFPS::handleMouseMoveEvent(
 	}
 
 	this->cursor.setPos(QPoint(m_camera->getWidth() / 2, m_camera->getHeight() / 2));
+	this->updateCrosshair();
+
+	if ( m_light != nullptr ) {
+        m_light->setPosition( m_camera->getPosition() );
+        m_light->setDirection( m_camera->getDirection() );
+    }
+
+	
+	// auto near = m_camera->getZNear()
+	
+	// Update crosshair
+	// auto vec = m_camera->unProjectFromScreen(Ra::Core::Vector3(m_camera->getWidth() / 2, m_camera->getHeight() / 2, 0));
+	// Ra::Core::Transform transform;
+	// transform.translation() = vec;
+	// this->crosshair->update(transform);
+	// Ra::Core::Transform transform;
+	// transform.translation() = m_target;
+	// this->crosshair->update(transform);
+
+
+
+
+
 	
 	return m_currentAction.isValid();
 
@@ -225,6 +255,10 @@ void ShooterFPS::setCameraPosition(const Core::Vector3 &position)
 
 	m_camera->setPosition( position );
     m_camera->setDirection( ( m_target - position ).normalized() );
+	if ( m_light != nullptr ) {
+        m_light->setPosition( m_camera->getPosition() );
+        m_light->setDirection( m_camera->getDirection() );
+    }
 }
 
 
@@ -237,12 +271,7 @@ void ShooterFPS::setCameraTarget(const Core::Vector3 &target)
 }
 
 
-void ShooterFPS::resetCamera()
-{
-
-}
-
-
+void ShooterFPS::resetCamera() {}
 
 
 void ShooterFPS::moveToForward()
@@ -259,6 +288,7 @@ void ShooterFPS::moveToForward()
     forward_t.translation() = speed*vec_proj.normalized();
 	// forward_t.translation() = speed*vector_forward.normalized();
 	m_camera->applyTransform(forward_t);
+	this->updateCrosshair();
 }
 
 void ShooterFPS::moveToBackward()
@@ -274,6 +304,13 @@ void ShooterFPS::moveToBackward()
 	Ra::Core::Transform backward_t( Ra::Core::Transform::Identity() );
     backward_t.translation() = -speed*vec_proj.normalized();;
 	m_camera->applyTransform(backward_t);
+
+	if ( m_light != nullptr ) {
+        m_light->setPosition( m_camera->getPosition() );
+        m_light->setDirection( m_camera->getDirection() );
+    }
+
+	this->updateCrosshair();
 }
 
 void ShooterFPS::moveToRight()
@@ -281,6 +318,13 @@ void ShooterFPS::moveToRight()
 	Ra::Core::Transform right_t( Ra::Core::Transform::Identity() );
     right_t.translation() = speed*m_camera->getRightVector().normalized();
 	m_camera->applyTransform(right_t);
+
+	if ( m_light != nullptr ) {
+        m_light->setPosition( m_camera->getPosition() );
+        m_light->setDirection( m_camera->getDirection() );
+    }
+
+	this->updateCrosshair();
 }
 
 void ShooterFPS::moveToLeft()
@@ -288,7 +332,36 @@ void ShooterFPS::moveToLeft()
 	Ra::Core::Transform left_t( Ra::Core::Transform::Identity() );
     left_t.translation() = -speed*m_camera->getRightVector().normalized();
 	m_camera->applyTransform(left_t);
+
+	if ( m_light != nullptr ) {
+        m_light->setPosition( m_camera->getPosition() );
+        m_light->setDirection( m_camera->getDirection() );
+    }
+	
+	this->updateCrosshair();
 }
 
+void ShooterFPS::setAimTrainer(AimTrainer& aim_trainer)
+{
+	this->aim_trainer = &aim_trainer;
 }
+
+
+void ShooterFPS::setCrosshair(Crosshair& crosshair)
+{
+	this->crosshair = &crosshair;
+	this->updateCrosshair();
+	
+	
 }
+
+void ShooterFPS::updateCrosshair()
+{
+	Ra::Core::Transform transform(Ra::Core::Transform::Identity());
+	auto p = this->m_camera->unProjectFromScreen(Ra::Core::Vector3(m_camera->getWidth() / 2, m_camera->getHeight() / 2, 0));
+	transform.translation() = p;
+	this->crosshair->update(transform);
+}
+
+} // END NAMESPACE Gui
+} // END NAMESPACE Ra

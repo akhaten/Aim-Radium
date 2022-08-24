@@ -5,12 +5,17 @@
 #include <Gui/RadiumWindow/SimpleWindowFactory.hpp>
 #include <Gui/Viewer/Viewer.hpp>
 
-#include "FPS/ShooterFPS.hpp"
+#include <QPainter>
+#include <QPen>
+#include <QPoint>
+
+#include "ShooterFPS.hpp"
 
 /**
  * Simple custom windows for custom KeyEvent demonstration
  */
-class AimRadium : public Ra::Gui::SimpleWindow
+class AimRadium : 
+    public Ra::Gui::SimpleWindow
 {
     // Q_OBJECT
 
@@ -22,30 +27,38 @@ class AimRadium : public Ra::Gui::SimpleWindow
         Ra::Gui::SimpleWindow::SimpleWindow( w, h, parent ) {
         //! [Initialize KeyEvent context and actions for demo window]
         //! [Initialize KeyEvent context and actions for demo window]
+        // setAttribute(Qt::WA_TranslucentBackground, true);
     
-    //    auto viewer =  getViewer();
-    //    shooter = new Ra::Gui::ShooterFPS(*(viewer->getCameraManipulator()));
-    //    viewer->setCameraManipulator(shooter);
+        // auto viewerwidget = Widget::createWindowContainer(getViewer());
+        // setCentralWidget(viewerwidget);
+        
+        //    auto viewer =  getViewer();
+        //    shooter = new Ra::Gui::ShooterFPS(*(viewer->getCameraManipulator()));
+        //    viewer->setCameraManipulator(shooter);
     
     }
 
     void configure() override {
 
+        
         TO_FORWARD = getViewer()->addKeyReleaseEventAction(
             "TO_FORWARD", "Key_Z", "", "", "false", [this]( QKeyEvent* event ) {
                 Ra::Gui::ShooterFPS* shooter = dynamic_cast<Ra::Gui::ShooterFPS*>(getViewer()->getCameraManipulator());
                 shooter->moveToForward();
             } );
+
         TO_BACKWARD = getViewer()->addKeyReleaseEventAction(
             "TO_BACKWARD", "Key_S", "", "", "false", [this]( QKeyEvent* event ) {
                 Ra::Gui::ShooterFPS* shooter = dynamic_cast<Ra::Gui::ShooterFPS*>(getViewer()->getCameraManipulator());
                 shooter->moveToBackward();
             } );
+
         TO_LEFT = getViewer()->addKeyReleaseEventAction(
             "TO_LEFT", "Key_Q", "", "", "false", [this]( QKeyEvent* event ) {
                 Ra::Gui::ShooterFPS* shooter = dynamic_cast<Ra::Gui::ShooterFPS*>(getViewer()->getCameraManipulator());
                 shooter->moveToLeft();
             } );
+            
         TO_RIGHT = getViewer()->addKeyReleaseEventAction(
             "TO_RIGHT", "Key_D", "", "", "false", [this]( QKeyEvent* event ) {
                 Ra::Gui::ShooterFPS* shooter = dynamic_cast<Ra::Gui::ShooterFPS*>(getViewer()->getCameraManipulator());
@@ -57,7 +70,7 @@ class AimRadium : public Ra::Gui::SimpleWindow
     //! [Manage KeyEvent reaching the window]
     private:
         //! [KeyEvent for demo window]
-        Ra::Gui::KeyMappingManager::Context m_demoContext {};
+        // Ra::Gui::KeyMappingManager::Context m_demoContext {};
 
         Ra::Gui::KeyMappingManager::KeyMappingAction TO_FORWARD;
         Ra::Gui::KeyMappingManager::KeyMappingAction TO_BACKWARD;
@@ -73,7 +86,8 @@ class AimRadium : public Ra::Gui::SimpleWindow
 /**
  * Define a factory that set instanciate the Demonstration Window
  */
-class AimRadiumFactory : public Ra::Gui::BaseApplication::WindowFactory
+class AimRadiumFactory : 
+    public Ra::Gui::BaseApplication::WindowFactory
 {
   public:
     ~AimRadiumFactory() = default;
